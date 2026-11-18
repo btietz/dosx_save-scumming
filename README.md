@@ -16,13 +16,37 @@ last save, open junk containers in the second sequence, and try again.
 
 To use it, just populate the areas array, and run it!
 
-There are a lot of options to expedite the run time:
+The best way to use this script is to use --longer to obtain fewer but longer
+solutions, and between each step of a solution being tried, save and open the
+target container(s) after each step.  Keep track of the best loot found thus
+far.  If you don't get a good loot drop, load the save, add open the next junk
+container, save, and try again, so for a sequence like this:
+
+c, US, Body, cB, c, Dress, Body, TR, Ward, TGT
+
+You might end up with saves named:
+
+c
+c US
+c US Body
+
+There's no point accumulating old saves, just delete the older increments as
+you go, but whenever you find a new best solution, save and keep that one until
+you find something better or don't expect to beat based on the pattern you're
+seeing, e.g.:
+
+c US Body - helm upgrade 75 and 25
+
+There are a lot of options to generate longer solutions but still expedite the
+run time:
 
 --sequential / -s: areas are forced to be sequential.  Useful if containers are
-widely separated, to minimize travel time.  This is mostly mitigated by
-splitting your party, sending different characters to different areas, but the
-feature remains.  It's basically an artifact from before I figured out that
-trick.
+widely separated, to minimize travel time.  This, along with multi-area support,
+is an old feature from earlier in development of this script.  Splitting your
+party, sending different characters to different areas with clusters of junk
+containers to open them, while leaving your character with the best "lucky find"
+talent at the target container is far more effective, but the feature remains.
+It's basically an artifact from before I figured out that trick.
 
 --randomly-terminate-exploration X: if the number of junk containers available
 is massive so the run time explodes, but you want to make best use of them, this

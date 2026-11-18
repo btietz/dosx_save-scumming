@@ -5,29 +5,54 @@ import sys
 import time
 
 areas = [
-    {"area": "Underground",
+    {"area": "Blackpits",
      "types": [
-        {"type": "Burnt corpse",
-         "abbrev": "BC",
+        {"type": "Container",
+         "abbrev": "c",
+         "count": 2,                    # 12,
+         "objective": False
+        },
+        {"type": "Container - Brian",
+         "abbrev": "cB",
+         "count": 2,                    # 8,
+         "objective": False
+        },
+        {"type": "Desk",
+         "abbrev": "d",
          "count": 1,
          "objective": False
         },
-        {"type": "Charred corpse",
-         "abbrev": "CC",
+        {"type": "Cupboard",
+         "abbrev": "CupB",
          "count": 1,
          "objective": False
         },
-        {"type": "Slug corpse",
-         "abbrev": "SC",
+        {"type": "Cabinet",
+         "abbrev": "Cab",
          "count": 1,
          "objective": False
         },
-        {"type": "Sack",
-         "abbrev": "S",
+        {"type": "Kitchen rack",
+         "abbrev": "KR",
          "count": 1,
          "objective": False
         },
-
+        {"type": "Coffin",
+         "abbrev": "Cof",
+         "count": 2,                    # 8,
+         "objective": False
+        },
+       {"type": "Skeleton",
+         "abbrev": "Sk",
+         "count": 2,                    # 5,
+         "objective": False
+        },
+        {"type": "Unlabeled sacks",
+         "abbrev": "US",
+         "count": 2,                    # 4,
+         "objective": False
+        },
+ 
         {"type": "target",
          "abbrev": "TGT",
          "count": 1,
@@ -55,8 +80,10 @@ preserve_rare_abbrevs = set()
 
 start_time = time.time()
 total_solutions = 0
+exploration_cutoff_base_len = 8
 max_solutions = 1000000
 reduction_count = 50000
+total_items = 0
 overrepresented_age_window_size = reduction_count
 cost_delete_threshold = 10.0
 total_deletions_by_cost = 0
@@ -78,6 +105,7 @@ def main():
     global printed_times_up
     global solutions
     global total_solutions
+    global total_items
     global total_deletions_by_cost
     global total_deletions_by_inversion
     global total_deletions_for_longer
@@ -153,6 +181,7 @@ def main():
                         if cont_group["abbrev"] == other_group["abbrev"]:
                             dup_abbrev = cont_group["abbrev"]
                             raise Exception(f"duplicate abbrev {dup_abbrev}")
+            total_items += cont_group["count"]
 
     explore_all(areas, [], None, min_area_index)
 
@@ -180,6 +209,7 @@ def explore_all(areas, steps, skip_container_type, min_area_index):
     global start_time
     global time_limited
     global printed_times_up
+    global exploration_cutoff_base_len
     global longer
     global longer_factor
     global preserve_rares_threshold
@@ -190,7 +220,7 @@ def explore_all(areas, steps, skip_container_type, min_area_index):
             printed_times_up = True
         return
 
-    if len(steps) >= 9 + longer_factor and not continue_long_run_anyway(areas):
+    if len(steps) > exploration_cutoff_base_len + longer_factor and not continue_long_run_anyway(areas):
         # yeah no, that's really excessive...
         return
 
@@ -259,6 +289,10 @@ def explore_all(areas, steps, skip_container_type, min_area_index):
 
 def add_solution_if_not_redundant_limit_count(new_steps):
     global start_time
+    global longer
+    global longer_factor
+    global exploration_cutoff_base_len
+    global total_items
     global solutions
     global solutions_set
     global total_solutions
@@ -266,7 +300,14 @@ def add_solution_if_not_redundant_limit_count(new_steps):
     global reduction_count
     global preserve_rares_threshold
 
-    if preserve_rares_threshold >= 1 and len(new_steps) > 1:
+    len_new_steps = len(new_steps)
+
+    if ( longer and len_new_steps < exploration_cutoff_base_len + longer_factor * 0.75
+                and len_new_steps < total_items * 0.75 ):
+        # Too short
+        return
+
+    if preserve_rares_threshold >= 1 and len_new_steps > 1:
         total_rares = 0
         for step in new_steps:
             if step["abbrev"] in preserve_rare_abbrevs:
@@ -277,8 +318,8 @@ def add_solution_if_not_redundant_limit_count(new_steps):
 
     # Calculate solution cost
     new_steps_cost = 1.0
-    if len(new_steps) > 1:
-        for s_i in range(1, len(new_steps)):
+    if len_new_steps > 1:
+        for s_i in range(1, len_new_steps):
             if new_steps[s_i]["area"] != new_steps[s_i - 1]["area"]:
                 new_steps_cost += 1.0
             else:
@@ -289,10 +330,10 @@ def add_solution_if_not_redundant_limit_count(new_steps):
         # Find the redundancy
         for existing_solution_i in range(0, len(solutions)):
             existing_solution_steps = solutions[existing_solution_i]["steps"]
-            redundant = len(existing_solution_steps) == len(new_steps)
+            redundant = len(existing_solution_steps) == len_new_steps
             if redundant:
                 # Not necessarily...
-                for s_i in range(0, len(new_steps)):
+                for s_i in range(0, len_new_steps):
                     if existing_solution_steps[s_i]["type"] != new_steps[s_i]["type"]:
                         redundant = False
                         break
