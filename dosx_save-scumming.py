@@ -9,21 +9,21 @@ areas = [
      "types": [
         {"type": "Container",
          "abbrev": "c",
-         "count": 2,                    # 12,
+         "count": 4,                    # 8,
          "objective": False
         },
-        {"type": "Container - Brian",
-         "abbrev": "cB",
-         "count": 2,                    # 8,
+        {"type": "Unlabeled sacks",
+         "abbrev": "US",
+         "count": 4,
+         "objective": False
+        },
+        {"type": "Wardrobe",
+         "abbrev": "w",
+         "count": 1,
          "objective": False
         },
         {"type": "Desk",
          "abbrev": "d",
-         "count": 1,
-         "objective": False
-        },
-        {"type": "Cupboard",
-         "abbrev": "CupB",
          "count": 1,
          "objective": False
         },
@@ -32,29 +32,19 @@ areas = [
          "count": 1,
          "objective": False
         },
-        {"type": "Kitchen rack",
-         "abbrev": "KR",
+        {"type": "Coffin",
+         "abbrev": "Cof",
+         "count": 4,                    # 5,
+         "objective": False
+        },
+        {"type": "Skeleton",
+         "abbrev": "Sk",
          "count": 1,
          "objective": False
         },
-        {"type": "Coffin",
-         "abbrev": "Cof",
-         "count": 2,                    # 8,
-         "objective": False
-        },
-       {"type": "Skeleton",
-         "abbrev": "Sk",
-         "count": 2,                    # 5,
-         "objective": False
-        },
-        {"type": "Unlabeled sacks",
-         "abbrev": "US",
-         "count": 2,                    # 4,
-         "objective": False
-        },
  
-        {"type": "target",
-         "abbrev": "TGT",
+        {"type": "wood pile and/or target",
+         "abbrev": "WP/TGT",
          "count": 1,
          "objective": True
         },
